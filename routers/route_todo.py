@@ -25,7 +25,9 @@ async def create_todo(
     data: TodoBody,
     csrf_protect: CsrfProtect = Depends(),
 ):
-    new_token = auth.verify_update_jwt(request, csrf_protect, request.headers)
+    new_token = auth.verify_update_jwt(
+        request, csrf_protect, request.headers
+    )
     todo = jsonable_encoder(data)
     res = await db_create_todo(todo)
     response.status_code = HTTP_201_CREATED
@@ -49,7 +51,9 @@ async def get_todos(request: Request):
 
 
 @router.get("/api/todo/{id}", response_model=Todo)
-async def get_single_todo(id: str, request: Request, response: Response):
+async def get_single_todo(
+    id: str, request: Request, response: Response
+):
     new_token, _ = auth.verify_update_jwt(request)
     res = await db_get_single_todo(id)
     response.set_cookie(
@@ -61,7 +65,9 @@ async def get_single_todo(id: str, request: Request, response: Response):
     )
     if res:
         return res
-    raise HTTPException(status_code=404, detail=f"Task of ID: {id} doesn't exist")
+    raise HTTPException(
+        status_code=404, detail=f"Task of ID: {id} doesn't exist"
+    )
 
 
 @router.put("/api/todo/{id}", response_model=Todo)
@@ -72,7 +78,9 @@ async def update_todo(
     response: Response,
     csrf_protect: CsrfProtect = Depends(),
 ):
-    new_token = auth.verify_csrf_update_jwt(request, csrf_protect, request.headers)
+    new_token = auth.verify_csrf_update_jwt(
+        request, csrf_protect, request.headers
+    )
     todo = jsonable_encoder(data)
     res = await db_update_todo(id, todo)
     response.set_cookie(
@@ -94,7 +102,9 @@ async def delete_todo(
     response: Response,
     csrf_protect: CsrfProtect = Depends(),
 ):
-    new_token = auth.verify_csrf_update_jwt(request, csrf_protect, request.headers)
+    new_token = auth.verify_csrf_update_jwt(
+        request, csrf_protect, request.headers
+    )
     res = await db_delete_todo(id)
     response.set_cookie(
         key="access_token",
