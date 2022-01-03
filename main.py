@@ -26,8 +26,12 @@ def get_csrf_config():
 
 
 @app.exception_handler(CsrfProtectError)
-def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
-    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
+def csrf_protect_exception_handler(
+    request: Request, exc: CsrfProtectError
+):
+    return JSONResponse(
+        status_code=exc.status_code, content={"detail": exc.message}
+    )
 
 
 @app.get("/", response_model=SuccessMsg)
