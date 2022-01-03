@@ -28,12 +28,18 @@ class AuthJwtCsrf:
 
     def decode_jwt(self, token) -> str:
         try:
-            payload = jwt.decode(token, self.secret_key, algorithms=["HS256"])
+            payload = jwt.decode(
+                token, self.secret_key, algorithms=["HS256"]
+            )
             return payload["sub"]
         except jwt.ExpiredSignatureError:
-            raise HTTPException(status_code=401, detail="The JWT has expired")
+            raise HTTPException(
+                status_code=401, detail="The JWT has expired"
+            )
         except jwt.InvalidTokenError:
-            raise HTTPException(status_code=401, detail="JWT is not valid")
+            raise HTTPException(
+                status_code=401, detail="JWT is not valid"
+            )
 
     def verify_jwt(self, request) -> str:
         token = request.cookies.get("access_token")
@@ -51,7 +57,9 @@ class AuthJwtCsrf:
         new_token = self.encode_jwt(subject)
         return new_token, subject
 
-    def verify_csrf_update_jwt(self, request, csrf_protect, headers) -> str:
+    def verify_csrf_update_jwt(
+        self, request, csrf_protect, headers
+    ) -> str:
         csrf_token = csrf_protect.get_csrf_from_headers(headers)
         csrf_protect.validate_csrf(csrf_token)
         subject = self.verify_jwt(request)
