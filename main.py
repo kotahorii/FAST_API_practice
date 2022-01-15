@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from routers import route_todo, route_auth
-from schemas import SuccessMsg
+from fastapi.responses import JSONResponse
 from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
-from schemas import CsrfSettings
+
+from routers import route_auth, route_todo
+from schemas import CsrfSettings, SuccessMsg
 
 app = FastAPI()
 app.include_router(route_todo.router)
@@ -26,12 +26,8 @@ def get_csrf_config():
 
 
 @app.exception_handler(CsrfProtectError)
-def csrf_protect_exception_handler(
-    request: Request, exc: CsrfProtectError
-):
-    return JSONResponse(
-        status_code=exc.status_code, content={"detail": exc.message}
-    )
+def csrf_protect_exception_handler(request: Request, exc: CsrfProtectError):
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
 
 
 @app.get("/", response_model=SuccessMsg)

@@ -1,8 +1,10 @@
-from decouple import config
 from typing import Union
+
 import motor.motor_asyncio
 from bson import ObjectId
+from decouple import config
 from fastapi import HTTPException
+
 from auth_utils import AuthJwtCsrf
 
 MONGO_API_KEY = config("MONGO_API_KEY")
@@ -55,9 +57,7 @@ async def db_update_todo(id: str, data: dict) -> Union[dict, bool]:
             {"_id": ObjectId(id)}, {"$set": data}
         )
         if updated_todo.modified_count > 0:
-            new_todo = await collection_todo.find_one(
-                {"_id": ObjectId(id)}
-            )
+            new_todo = await collection_todo.find_one({"_id": ObjectId(id)})
             return todo_serializer(new_todo)
     return False
 
@@ -65,9 +65,7 @@ async def db_update_todo(id: str, data: dict) -> Union[dict, bool]:
 async def db_delete_todo(id: str) -> bool:
     todo = await collection_todo.find_one({"_id": ObjectId(id)})
     if todo:
-        deleted_todo = await collection_todo.delete_one(
-            {"_id": ObjectId(id)}
-        )
+        deleted_todo = await collection_todo.delete_one({"_id": ObjectId(id)})
         if deleted_todo.deleted_count > 0:
             return True
     return False
@@ -78,13 +76,9 @@ async def db_signup(data: dict) -> dict:
     password = data.get("password")
     overlap_user = await collection_user.find_one({"email": email})
     if overlap_user:
-        raise HTTPException(
-            status_code=400, detail="Email is already taken"
-        )
+        raise HTTPException(status_code=400, detail="Email is already taken")
     if not password or len(password) < 6:
-        raise HTTPException(
-            status_code=400, detail="Password is too short"
-        )
+        raise HTTPException(status_code=400, detail="Password is too short")
     user = await collection_user.insert_one(
         {"email": email, "password": auth.generate_hashed_pw(password)}
     )
@@ -97,8 +91,6 @@ async def db_login(data: dict) -> str:
     password = data.get("password")
     user = await collection_user.find_one({"email": email})
     if not user or not auth.verify_pw(password, user["password"]):
-        raise HTTPException(
-            status_code=401, detail="Invalid email or password"
-        )
+        raise HTTPException(status_code=401, detail="Invalid email or password")
     token = auth.encode_jwt(user["email"])
     return token

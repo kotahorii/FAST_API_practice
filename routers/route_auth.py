@@ -1,11 +1,10 @@
-from fastapi import APIRouter
-from fastapi import Response, Depends
-from fastapi.encoders import jsonable_encoder
-from starlette.requests import Request
-from database import db_signup, db_login
-from fastapi_csrf_protect import CsrfProtect
-from schemas import UserBody, SuccessMsg, UserInfo, Csrf
 from auth_utils import AuthJwtCsrf
+from database import db_login, db_signup
+from fastapi import APIRouter, Depends, Response
+from fastapi.encoders import jsonable_encoder
+from fastapi_csrf_protect import CsrfProtect
+from schemas import Csrf, SuccessMsg, UserBody, UserInfo
+from starlette.requests import Request
 
 router = APIRouter()
 auth = AuthJwtCsrf()
